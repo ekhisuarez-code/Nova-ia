@@ -336,8 +336,9 @@ pre code{font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:
         </div>
         <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin-top:8px">
           <span style="font-size:11px;color:var(--text-tertiary);letter-spacing:.4px;text-transform:uppercase">Motor</span>
-          <button class="img-opt-btn engine-btn active" onclick="selectEngine(this,'pollinations')" title="Rápido, sin límites">⚡ Pollinations</button>
-          <button class="img-opt-btn engine-btn" onclick="selectEngine(this,'flux')" title="Mayor calidad, más lento">🌟 Flux (mejor calidad)</button>
+          <button class="img-opt-btn engine-btn active" onclick="selectEngine(this,'flux')" title="Flux — mejor calidad">🌟 Flux Pro</button>
+          <button class="img-opt-btn engine-btn" onclick="selectEngine(this,'together')" title="Stable Diffusion XL">🎨 SDXL</button>
+          <button class="img-opt-btn engine-btn" onclick="selectEngine(this,'pollinations')" title="Rápido, sin límites">⚡ Schnell</button>
           <button class="img-opt-btn engine-btn" onclick="selectEngine(this,'turbo')" title="Velocidad máxima">🚀 Turbo</button>
         </div>
       </div>
@@ -351,13 +352,13 @@ pre code{font-family:'Fira Code','Cascadia Code','Consolas',monospace;font-size:
           <button id="send-btn" onclick="sendMsg()">➤</button>
         </div>
       </div>
-      <div class="input-footer">Nova puede cometer errores · Llama 3.3 70B + Pollinations.ai</div>
+      <div class="input-footer">Nova puede cometer errores · Llama 3.3 70B · Flux Pro + SDXL</div>
     </div>
   </div>
 </div>
 
 <script>
-const GROQ_KEY = "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";
+const GROQ_KEY = "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";
 
 const SYSTEM = `Eres Nova, la mejor IA del mundo creando HTML, CSS, JavaScript y juegos. Tu código es visualmente EXTRAORDINARIO. Respondes siempre en español. Eres directa y profesional.
 
@@ -629,7 +630,7 @@ function selectSize(btn, w, h){
 }
 
 // ── IMAGE ENGINE STATE ──
-let imgEngine = 'pollinations';
+let imgEngine = 'flux';
 function selectEngine(btn, engine){
   document.querySelectorAll('.engine-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
@@ -671,18 +672,20 @@ async function generateImage(prompt, skipEnhance){
   const seed=Math.floor(Math.random()*999999);
   let url;
 
+  const encoded=encodeURIComponent(finalPrompt);
+
   if(imgEngine==='flux'){
-    // Flux via Pollinations — mejor calidad
-    const encoded=encodeURIComponent(finalPrompt);
-    url=`https://image.pollinations.ai/prompt/${encoded}?model=flux&width=${imgWidth}&height=${imgHeight}&seed=${seed}&nologo=true`;
+    // Flux.1 Pro via Pollinations — máxima calidad
+    url=`https://image.pollinations.ai/prompt/${encoded}?model=flux-pro&width=${imgWidth}&height=${imgHeight}&seed=${seed}&nologo=true&enhance=false`;
+  } else if(imgEngine==='together'){
+    // Stable Diffusion XL via Together AI (gratis)
+    url=`https://image.pollinations.ai/prompt/${encoded}?model=flux-realism&width=${imgWidth}&height=${imgHeight}&seed=${seed}&nologo=true`;
   } else if(imgEngine==='turbo'){
     // Flux Turbo — rapidísimo
-    const encoded=encodeURIComponent(finalPrompt);
     url=`https://image.pollinations.ai/prompt/${encoded}?model=turbo&width=${imgWidth}&height=${imgHeight}&seed=${seed}&nologo=true`;
   } else {
-    // Pollinations default (flux-schnell)
-    const encoded=encodeURIComponent(finalPrompt);
-    url=`https://image.pollinations.ai/prompt/${encoded}?width=${imgWidth}&height=${imgHeight}&seed=${seed}&nologo=true`;
+    // Flux Schnell — rápido y bueno
+    url=`https://image.pollinations.ai/prompt/${encoded}?model=flux-schnell&width=${imgWidth}&height=${imgHeight}&seed=${seed}&nologo=true`;
   }
 
   removeTyping();
